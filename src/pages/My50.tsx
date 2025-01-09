@@ -79,6 +79,7 @@ export default function My50() {
         if (inputValidation()) {
             set(ref(db, "my50/" + userUsername), {
                 purchaseDate: purchasedDate.getTime(),
+                readableDate: new Date(purchasedDate.getTime()).toLocaleString(),
             })
                 .then(() => {
                     toast.success("User Saved");
