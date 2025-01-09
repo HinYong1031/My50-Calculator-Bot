@@ -42,8 +42,14 @@ type DateType = {
     year: number;
 };
 
+// This is a simple tools to calculate My50 expiry date and next purchase date.
+// It uses Firebase Realtime Database to store user data.
+// It collects Username from the user instead of IC because I'm lazy to do with IC.
+// It also collects Mobile Number from the user for alert notification in WhatsApp.
+
 export default function My50() {
     const [userUsername, setUserUsername] = useState("");
+    const [mobileNum, setMobileNum] = useState("");
     const [purchasedDate, setPurchasedDate] = useState(new Date());
     const [cusPurchaseDate, setCusPurchaseDate] = useState<DateType>();
     const [cusExpiredDate, setCusExpiredDate] = useState<DateType>();
@@ -51,8 +57,8 @@ export default function My50() {
     const [userExist, setUserExist] = useState(false);
 
     function inputValidation() {
-        if (userUsername === "") {
-            toast.error("Username is empty");
+        if (mobileNum === "" || userUsername === "") {
+            toast.error("Mobile Number or Username is empty");
             return false;
         }
         return true;
@@ -77,9 +83,21 @@ export default function My50() {
 
     function saveUser() {
         if (inputValidation()) {
+            const expiryEpoch = purchasedDate.getTime() + 2505600000; // 29 days
+            const nextPurchaseEpoch = expiryEpoch + 86400000; // 1 day after expiry
+
             set(ref(db, "my50/" + userUsername), {
+                mobileNum: mobileNum,
                 purchaseDate: purchasedDate.getTime(),
-                readableDate: new Date(purchasedDate.getTime()).toLocaleString(),
+                readableDate: new Date(
+                    purchasedDate.getTime()
+                ).toLocaleString(),
+                expiryDate: expiryEpoch,
+                readableExpiryDate: new Date(expiryEpoch).toLocaleString(),
+                nextPurchaseDate: nextPurchaseEpoch,
+                readableNextPurchaseDate: new Date(
+                    nextPurchaseEpoch
+                ).toLocaleString(),
             })
                 .then(() => {
                     toast.success("User Saved");
@@ -103,22 +121,10 @@ export default function My50() {
         }
     }
 
-    useEffect(() => {
-        if (userUsername !== "") {
-            get(ref(db, "my50/" + userUsername)).then((snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    setUserExist(true);
-                } else {
-                    setUserExist(false);
-                }
-            });
-        }
-    }, [userUsername]);
+    function calculateDate() {
+        const expiryEpoch = purchasedDate.getTime() + 2505600000; // 29 days
+        const nextPurchaseEpoch = expiryEpoch + 86400000; // 1 day after expiry
 
-    useEffect(() => {
-        const expiredEpoch = purchasedDate.getTime() + 2505600000;
-        const nextPurchaseEpoch = expiredEpoch + 86400000;
         setCusPurchaseDate({
             day: purchasedDate.toLocaleDateString("en-US", {
                 weekday: "long",
@@ -148,8 +154,9 @@ export default function My50() {
                 | "Dec",
             year: purchasedDate.getFullYear(),
         });
+
         setCusExpiredDate({
-            day: new Date(expiredEpoch).toLocaleDateString("en-US", {
+            day: new Date(expiryEpoch).toLocaleDateString("en-US", {
                 weekday: "long",
             }) as
                 | "Monday"
@@ -159,8 +166,8 @@ export default function My50() {
                 | "Friday"
                 | "Saturday"
                 | "Sunday",
-            date: new Date(expiredEpoch).getDate(),
-            month: new Date(expiredEpoch).toLocaleDateString("en-US", {
+            date: new Date(expiryEpoch).getDate(),
+            month: new Date(expiryEpoch).toLocaleDateString("en-US", {
                 month: "short",
             }) as
                 | "Jan"
@@ -175,8 +182,9 @@ export default function My50() {
                 | "Oct"
                 | "Nov"
                 | "Dec",
-            year: new Date(expiredEpoch).getFullYear(),
+            year: new Date(expiryEpoch).getFullYear(),
         });
+
         setCusNextPurchaseDate({
             day: new Date(nextPurchaseEpoch).toLocaleDateString("en-US", {
                 weekday: "long",
@@ -206,6 +214,24 @@ export default function My50() {
                 | "Dec",
             year: new Date(nextPurchaseEpoch).getFullYear(),
         });
+    }
+
+    useEffect(() => {
+        if (mobileNum !== "" && userUsername !== "") {
+            // Retrieve username and mobile number
+            get(ref(db, "my50/" + userUsername)).then((snapshot) => {
+                const data = snapshot.val();
+                if (data && data.mobileNum === mobileNum) {
+                    setUserExist(true);
+                } else {
+                    setUserExist(false);
+                }
+            });
+        }
+    }, [userUsername, mobileNum]);
+
+    useEffect(() => {
+        calculateDate();
     }, [purchasedDate]);
 
     return (
@@ -226,6 +252,22 @@ export default function My50() {
                                     const regex = /^[a-zA-Z0-9]*$/;
                                     if (regex.test(value)) {
                                         setUserUsername(value);
+                                    }
+                                }}
+                                className="dark:text-white"
+                            />
+                        </div>
+                        <div className="lg:w-72 sm:w-60">
+                            <Input
+                                color="blue"
+                                label="Mobile Number"
+                                value={mobileNum}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    // regex to be only start from 0-9
+                                    const regex = /^[0-9]*$/;
+                                    if (regex.test(value)) {
+                                        setMobileNum(value);
                                     }
                                 }}
                                 className="dark:text-white"
@@ -268,9 +310,13 @@ export default function My50() {
                             </IconButton>
                         </Tooltip>
                     </div>
-                    {userExist && (
+                    {userExist ? (
                         <Typography className="text-sm text-gray-500">
-                            * User Exist
+                            * User Exists
+                        </Typography>
+                    ) : (
+                        <Typography className="text-sm text-red-500">
+                            * User Does Not Exist
                         </Typography>
                     )}
                 </div>
