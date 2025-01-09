@@ -69,7 +69,7 @@ export default function My50() {
             get(ref(db, "my50/" + userUsername))
                 .then((snapshot) => {
                     const data = snapshot.val();
-                    if (data) {
+                    if (data && data.mobileNum === mobileNum) {
                         setPurchasedDate(new Date(data.purchaseDate));
                     } else {
                         toast.error("No Record Found");
@@ -310,15 +310,17 @@ export default function My50() {
                             </IconButton>
                         </Tooltip>
                     </div>
-                    {userExist ? (
-                        <Typography className="text-sm text-gray-500">
-                            * User Exists
-                        </Typography>
-                    ) : (
-                        <Typography className="text-sm text-red-500">
-                            * User Does Not Exist
-                        </Typography>
-                    )}
+                    {userUsername !== "" && mobileNum !== "" &&
+                        (userExist ? (
+                            <Typography className="text-sm text-gray-500">
+                                * User Exists
+                            </Typography>
+                        ) : (
+                            <Typography className="text-sm text-red-500">
+                                * User Does Not Exist
+                            </Typography>
+                        ))
+                    }
                 </div>
             </div>
 
