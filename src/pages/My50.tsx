@@ -236,43 +236,47 @@ export default function My50() {
 
     return (
         <>
-            <Typography variant="h3" className="dark:text-white mb-4">
+            <Typography
+                variant="h3"
+                className="dark:text-white mb-6 text-center"
+            >
                 My50 Calculator
             </Typography>
-            <div className="flex justify-center">
-                <div>
-                    <div className="flex items-center gap-2 justify-center">
-                        <div className="lg:w-72 sm:w-60">
-                            <Input
-                                color="blue"
-                                label="Username"
-                                value={userUsername}
-                                onChange={(e) => {
-                                    const value = e.target.value;
-                                    const regex = /^[a-zA-Z0-9]*$/;
-                                    if (regex.test(value)) {
-                                        setUserUsername(value);
-                                    }
-                                }}
-                                className="dark:text-white"
-                            />
-                        </div>
-                        <div className="lg:w-72 sm:w-60">
-                            <Input
-                                color="blue"
-                                label="Mobile Number"
-                                value={mobileNum}
-                                onChange={(e) => {
-                                    const value = e.target.value;
-                                    // regex to be only start from 0-9
-                                    const regex = /^[0-9]*$/;
-                                    if (regex.test(value)) {
-                                        setMobileNum(value);
-                                    }
-                                }}
-                                className="dark:text-white"
-                            />
-                        </div>
+
+            {/* User Input Section */}
+            <div className="flex flex-col items-center gap-6">
+                <div className="p-6 border border-gray-300 rounded-lg dark:border-gray-600 shadow-md w-full max-w-4xl">
+                    <div className="grid lg:grid-cols-2 sm:grid-cols-1 gap-4">
+                        <Input
+                            color="blue"
+                            label="Username"
+                            value={userUsername}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                const regex = /^[a-zA-Z0-9]*$/;
+                                if (regex.test(value)) {
+                                    setUserUsername(value);
+                                }
+                            }}
+                            className="dark:text-white w-full"
+                        />
+                        <Input
+                            color="blue"
+                            label="Mobile Number"
+                            value={mobileNum}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                const regex = /^[0-9]*$/;
+                                if (regex.test(value)) {
+                                    setMobileNum(value);
+                                }
+                            }}
+                            className="dark:text-white w-full"
+                        />
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex justify-center gap-4 mt-4">
                         <Tooltip
                             content="Get"
                             className="dark:bg-blue-gray-600"
@@ -282,7 +286,7 @@ export default function My50() {
                                 className="rounded-full hover:bg-blue-gray-50 dark:hover:bg-blue-gray-800 text-blue-gray-600 dark:text-blue-gray-300"
                                 onClick={() => fetchUser()}
                             >
-                                <CloudArrowDownIcon className="size-6" />
+                                <CloudArrowDownIcon className="h-6 w-6" />
                             </IconButton>
                         </Tooltip>
                         <Tooltip
@@ -294,7 +298,7 @@ export default function My50() {
                                 className="rounded-full hover:bg-blue-gray-50 dark:hover:bg-blue-gray-800 text-blue-gray-600 dark:text-blue-gray-300"
                                 onClick={() => saveUser()}
                             >
-                                <CloudArrowUpIcon className="size-6" />
+                                <CloudArrowUpIcon className="h-6 w-6" />
                             </IconButton>
                         </Tooltip>
                         <Tooltip
@@ -306,98 +310,97 @@ export default function My50() {
                                 className="rounded-full hover:bg-blue-gray-50 dark:hover:bg-blue-gray-800 text-blue-gray-600 dark:text-blue-gray-300"
                                 onClick={() => deleteUser()}
                             >
-                                <TrashIcon className="size-6" />
+                                <TrashIcon className="h-6 w-6" />
                             </IconButton>
                         </Tooltip>
                     </div>
-                    {userUsername !== "" && mobileNum !== "" &&
-                        (userExist ? (
-                            <Typography className="text-sm text-gray-500">
-                                * User Exists
-                            </Typography>
-                        ) : (
-                            <Typography className="text-sm text-red-500">
-                                * User Does Not Exist
-                            </Typography>
-                        ))
-                    }
+
+                    {/* User Existence Message */}
+                    {userUsername !== "" && mobileNum !== "" && (
+                        <Typography
+                            className={`text-sm mt-2 ${
+                                userExist ? "text-gray-500" : "text-red-500"
+                            }`}
+                        >
+                            *{" "}
+                            {userExist ? "User Exists" : "User Does Not Exist"}
+                        </Typography>
+                    )}
                 </div>
             </div>
 
-            <div className="flex items-center justify-start md:justify-center gap-x-2 py-10">
-                <Typography className="font-bold text-base lg:text-2xl dark:text-white">
-                    Purchased Date :
-                </Typography>
-                <DatePicker
-                    dateFormat={"dd-MMM-yyyy"}
-                    selected={purchasedDate}
-                    onChange={(date) => setPurchasedDate(date || new Date())}
-                    className="border border-gray-500 rounded-lg w-32 pl-4 lg:pl-24 lg:w-72"
-                />
+            {/* Date Picker Section */}
+            <div className="flex flex-col items-center gap-4 mt-10">
+                <div className="flex items-center gap-4">
+                    <Typography className="font-bold text-lg dark:text-white">
+                        Purchased Date:
+                    </Typography>
+                    <DatePicker
+                        dateFormat={"dd-MMM-yyyy"}
+                        selected={purchasedDate}
+                        onChange={(date) =>
+                            setPurchasedDate(date || new Date())
+                        }
+                        className="border border-gray-500 rounded-lg px-4 py-2 dark:text-white dark:bg-gray-800"
+                    />
+                </div>
             </div>
 
-            <div className="flex items-center justify-start md:justify-center">
-                <div>
-                    <Typography className="font-bold text-base lg:text-2xl dark:text-white">
+            {/* Summary Section */}
+            <div className="mt-10 flex justify-center">
+                <div className="p-6 border border-gray-300 rounded-lg dark:border-gray-600 shadow-md w-full max-w-4xl">
+                    <Typography className="font-bold text-lg lg:text-xl dark:text-white mb-4">
                         Summary
                     </Typography>
-                    <div className="flex gap-1">
-                        <div>
-                            {userUsername && (
-                                <Typography className="text-base lg:text-2xl dark:text-white">
-                                    Username :
-                                </Typography>
-                            )}
-                            <Typography className="text-base lg:text-2xl dark:text-white">
-                                Purchased Date :
-                            </Typography>
-                            <Typography className="text-base lg:text-2xl dark:text-white">
-                                Expired Date :
-                            </Typography>
-                            <Typography className="text-base lg:text-2xl dark:text-white">
-                                You Should Buy On :
-                            </Typography>
-                        </div>
-                        <div>
-                            {userUsername && (
-                                <Typography className="text-base lg:text-2xl dark:text-white">
-                                    {userUsername}
-                                </Typography>
-                            )}
-                            <Typography className="text-base lg:text-2xl dark:text-white">
-                                {[
-                                    cusPurchaseDate?.day,
-                                    `, `,
-                                    cusPurchaseDate?.date,
-                                    ` `,
-                                    cusPurchaseDate?.month,
-                                    ` `,
-                                    cusPurchaseDate?.year,
-                                ]}
-                            </Typography>
-                            <Typography className="text-base lg:text-2xl dark:text-white">
-                                {[
-                                    cusExpiredDate?.day,
-                                    `, `,
-                                    cusExpiredDate?.date,
-                                    ` `,
-                                    cusExpiredDate?.month,
-                                    ` `,
-                                    cusExpiredDate?.year,
-                                ]}
-                            </Typography>
-                            <Typography className="text-base lg:text-2xl dark:text-white">
-                                {[
-                                    cusNextPurchaseDate?.day,
-                                    `, `,
-                                    cusNextPurchaseDate?.date,
-                                    ` `,
-                                    cusNextPurchaseDate?.month,
-                                    ` `,
-                                    cusNextPurchaseDate?.year,
-                                ]}
-                            </Typography>
-                        </div>
+                    <div className="grid grid-cols-2 gap-2">
+                        <Typography className="text-base dark:text-gray-300">
+                            Username:
+                        </Typography>
+                        <Typography className="text-base dark:text-white">
+                            {userUsername || "-"}
+                        </Typography>
+                        <Typography className="text-base dark:text-gray-300">
+                            Purchased Date:
+                        </Typography>
+                        <Typography className="text-base dark:text-white">
+                            {[
+                                cusPurchaseDate?.day,
+                                `, `,
+                                cusPurchaseDate?.date,
+                                ` `,
+                                cusPurchaseDate?.month,
+                                ` `,
+                                cusPurchaseDate?.year,
+                            ]}
+                        </Typography>
+                        <Typography className="text-base dark:text-gray-300">
+                            Expired Date:
+                        </Typography>
+                        <Typography className="text-base dark:text-white">
+                            {[
+                                cusExpiredDate?.day,
+                                `, `,
+                                cusExpiredDate?.date,
+                                ` `,
+                                cusExpiredDate?.month,
+                                ` `,
+                                cusExpiredDate?.year,
+                            ]}
+                        </Typography>
+                        <Typography className="text-base dark:text-gray-300">
+                            You Should Buy On:
+                        </Typography>
+                        <Typography className="text-base dark:text-white">
+                            {[
+                                cusNextPurchaseDate?.day,
+                                `, `,
+                                cusNextPurchaseDate?.date,
+                                ` `,
+                                cusNextPurchaseDate?.month,
+                                ` `,
+                                cusNextPurchaseDate?.year,
+                            ]}
+                        </Typography>
                     </div>
                 </div>
             </div>
