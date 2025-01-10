@@ -4,5 +4,5 @@ import react from "@vitejs/plugin-react";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/DIY-Tools/',
+  base: '/My50-Calculator-Bot/',
 });
