@@ -89,12 +89,12 @@ export default function My50() {
             set(ref(db, "my50/" + userUsername), {
                 mobileNum: mobileNum,
                 purchaseDate: purchasedDate.getTime(),
-                readableDate: new Date(
+                expiryDate: expiryEpoch,
+                nextPurchaseDate: nextPurchaseEpoch,
+                readablePurchaseDate: new Date(
                     purchasedDate.getTime()
                 ).toLocaleString(),
-                expiryDate: expiryEpoch,
                 readableExpiryDate: new Date(expiryEpoch).toLocaleString(),
-                nextPurchaseDate: nextPurchaseEpoch,
                 readableNextPurchaseDate: new Date(
                     nextPurchaseEpoch
                 ).toLocaleString(),
